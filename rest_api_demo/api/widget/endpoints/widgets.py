@@ -3,7 +3,7 @@ import logging
 from flask import request
 from flask_restplus import Resource
 from rest_api_demo.api.widget.business import create_widget, update_widget, delete_widget
-from rest_api_demo.api.widget.serializers import widget_description, category_with_widgets
+from rest_api_demo.api.widget.serializers import widget_description, category_with_widgets, page_of_widget_descriptions
 
 from rest_api_demo.api.restplus import api
 from rest_api_demo.api.widget.parsers import pagination_arguments
@@ -18,7 +18,7 @@ ns = api.namespace('blog/widgets', description='Operations related to blog widge
 class WidgetsCollection(Resource):
 
     @api.expect(pagination_arguments)
-    @api.marshal_with()
+    @api.marshal_with(page_of_widget_descriptions)
     def get(self):
         """
         Returns list of blog widgets.
