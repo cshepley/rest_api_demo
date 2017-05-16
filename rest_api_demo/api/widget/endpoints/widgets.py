@@ -11,7 +11,7 @@ from rest_api_demo.database.models import Widget
 
 log = logging.getLogger(__name__)
 
-ns = api.namespace('blog/widgets', description='Operations related to blog widgets')
+ns = api.namespace('widget/widgets', description='Operations related to widget widgets')
 
 
 @ns.route('/')
@@ -21,7 +21,7 @@ class WidgetsCollection(Resource):
     @api.marshal_with(page_of_widget_descriptions)
     def get(self):
         """
-        Returns list of blog widgets.
+        Returns list of widget widgets.
         """
         args = pagination_arguments.parse_args(request)
         page = args.get('page', 1)
@@ -35,7 +35,7 @@ class WidgetsCollection(Resource):
     @api.expect(widget_description)
     def widget(self):
         """
-        Creates a new blog widget.
+        Creates a new widget widget.
         """
         create_widget(request.json)
         return None, 201
@@ -48,7 +48,7 @@ class WidgetItem(Resource):
     @api.marshal_with(widget_description)
     def get(self, id):
         """
-        Returns a blog widget.
+        Returns a widget widget.
         """
         return Widget.query.filter(Widget.id == id).one()
 
@@ -56,7 +56,7 @@ class WidgetItem(Resource):
     @api.response(204, 'Widget successfully updated.')
     def put(self, id):
         """
-        Updates a blog widget.
+        Updates a widget widget.
         """
         data = request.json
         update_widget(id, data)
@@ -65,7 +65,7 @@ class WidgetItem(Resource):
     @api.response(204, 'Widget successfully deleted.')
     def delete(self, id):
         """
-        Deletes blog widget.
+        Deletes widget widget.
         """
         delete_widget(id)
         return None, 204
@@ -80,7 +80,7 @@ class WidgetsArchiveCollection(Resource):
     @api.marshal_with(page_of_widget_descriptions)
     def get(self, year, month=None, day=None):
         """
-        Returns list of blog widgets from a specified time period.
+        Returns list of widget widgets from a specified time period.
         """
         args = pagination_arguments.parse_args(request)
         page = args.get('page', 1)

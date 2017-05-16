@@ -1,3 +1,5 @@
+# Entry point for WidgetsRUs Flask app with Swagger API docs.
+
 import logging.config
 
 from flask import Flask, Blueprint
