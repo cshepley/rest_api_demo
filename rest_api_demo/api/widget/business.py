@@ -1,30 +1,30 @@
 from rest_api_demo.database import db
-from rest_api_demo.database.models import Post, Category
+from rest_api_demo.database.models import Widget, Category
 
 
-def create_blog_post(data):
-    title = data.get('title')
-    body = data.get('body')
+def create_widget(data):
+    name = data.get('name')
+    quantity = data.get('quantity')
     category_id = data.get('category_id')
     category = Category.query.filter(Category.id == category_id).one()
-    post = Post(title, body, category)
-    db.session.add(post)
+    widget = Widget(name, quantity, category)
+    db.session.add(widget)
     db.session.commit()
 
 
-def update_post(post_id, data):
-    post = Post.query.filter(Post.id == post_id).one()
-    post.title = data.get('title')
-    post.body = data.get('body')
+def update_widget(widget_id, data):
+    widget = Widget.query.filter(Widget.id == widget_id).one()
+    widget.name = data.get('name')
+    widget.quantity = data.get('quantity')
     category_id = data.get('category_id')
-    post.category = Category.query.filter(Category.id == category_id).one()
-    db.session.add(post)
+    widget.category = Category.query.filter(Category.id == category_id).one()
+    db.session.add(widget)
     db.session.commit()
 
 
-def delete_post(post_id):
-    post = Post.query.filter(Post.id == post_id).one()
-    db.session.delete(post)
+def delete_widget(widget_id):
+    widget = Widget.query.filter(Widget.id == widget_id).one()
+    db.session.delete(widget)
     db.session.commit()
 
 

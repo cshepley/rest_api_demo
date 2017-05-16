@@ -21,7 +21,7 @@ class Widget(db.Model):
         self.quantity = quantity
         if create_date is None:
             create_date = datetime.utcnow()
-        self.pub_date = create_date
+        self.create_date = create_date
         self.category = category
 
     def __repr__(self):
