@@ -21,7 +21,7 @@ order = api.model('Order', {
     'id': fields.Integer(readOnly=True, description='The unique identifier of an order'),
     'customer_name': fields.String(required=True, description='Customer name'),
     'order_date': fields.DateTime(readOnly=True),
-    'order_items': fields.List(fields.Nested(order_item))
+    'order_items': fields.List(fields.Nested(order_item)),
 })
 
 pagination = api.model('A page of results', {
@@ -32,7 +32,7 @@ pagination = api.model('A page of results', {
 })
 
 page_of_widget_descriptions = api.inherit('Page of widget descriptions', pagination, {
-    'items': fields.List(fields.Nested(widget_description))
+    'items': fields.List(fields.Nested(widget_description)),
 })
 
 category = api.model('Widget category', {
@@ -41,5 +41,5 @@ category = api.model('Widget category', {
 })
 
 category_with_widgets = api.inherit('Category with widgets', category, {
-    'widgets': fields.List(fields.Nested(widget_description))
+    'widgets': fields.List(fields.Nested(widget_description)),
 })

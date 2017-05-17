@@ -54,8 +54,8 @@ class OrderItem(db.Model):
     order_id = db.Column(db.Integer, db.ForeignKey('order.id'), primary_key=True)
     item_id = db.Column(db.Integer, db.ForeignKey('widget.id'), primary_key=True)
 
-
-    def __init__(self, item):
-        self.item = item
+    def __init__(self, order_id, item_id):
+        self.order_id = order_id
+        self.item_id = item_id
 
     item = db.relationship(Widget, lazy='joined')

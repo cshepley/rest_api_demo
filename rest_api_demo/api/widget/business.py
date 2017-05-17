@@ -58,10 +58,15 @@ def delete_category(category_id):
 def create_order(data):
     customer_name = data.get('customer_name')
     order_id = data.get('id')
+    order_items = data.get('order_items')
 
     order = Order(customer_name)
     if order_id:
         order.id = order_id
+
+    if order_items:
+        for order_item in order_items:
+            order.order_items.append(OrderItem(order_id, order_item['item_id']))
 
     db.session.add(order)
     db.session.commit()
@@ -82,13 +87,12 @@ def delete_order(order_id):
     
 def add_order_item(order_id, widget_id):
     order = Order.query.filter(Order.id == order_id).one()
-    widget = Order.query.filter(Widget.id == widget_id).one()
-    order.order_items.append(OrderItem(widget))
+    order.order_items.append(OrderItem(order.id, widget_id))
     db.session.add(order)
     db.session.commit()
 
 
 def delete_order_item(order_id, widget_id):
-    order_item = OrderItem.query.filter(OrderItem.order_id == order_id).filter(OrderItem.item_id == widget_id).one()
+    order_item = OrderItem.query.filter(OrderItem.order_id == order_id).filter(OrderItem.item_id == widget_id).first()
     db.session.delete(order_item)
     db.session.commit()
