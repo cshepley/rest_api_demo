@@ -74,28 +74,39 @@ class WidgetItem(Resource):
         return None, 204
 
 
-@ns.route('/archive/<int:year>/')
-@ns.route('/archive/<int:year>/<int:month>/')
-@ns.route('/archive/<int:year>/<int:month>/<int:day>/')
-class WidgetsArchiveCollection(Resource):
+@ns.route('/finshes/<string:finish>/')
+class WidgetsFinishCollection(Resource):
 
     @api.expect(pagination_arguments, validate=True)
     @api.marshal_with(page_of_widget_descriptions)
-    def get(self, year, month=None, day=None):
+    def get(self, finish):
         """
-        Returns list of widget widgets from a specified time period.
+        Returns list of widget widgets of a specified finish.
         """
         args = pagination_arguments.parse_args(request)
         page = args.get('page', 1)
         per_page = args.get('per_page', 10)
 
-        start_month = month if month else 1
-        end_month = month if month else 12
-        start_day = day if day else 1
-        end_day = day + 1 if day else 31
-        start_date = '{0:04d}-{1:02d}-{2:02d}'.format(year, start_month, start_day)
-        end_date = '{0:04d}-{1:02d}-{2:02d}'.format(year, end_month, end_day)
-        widgets_query = Widget.query.filter(Widget.create_date >= start_date).filter(Widget.create_date <= end_date)
+        widgets_query = Widget.query.filter(Widget.finish == finish)
+
+        widgets_page = widgets_query.paginate(page, per_page, error_out=False)
+
+        return widgets_page
+
+@ns.route('/sizes/<int:size>/')
+class WidgetsSizeCollection(Resource):
+
+    @api.expect(pagination_arguments, validate=True)
+    @api.marshal_with(page_of_widget_descriptions)
+    def get(self, size):
+        """
+        Returns list of widget widgets of a specified size.
+        """
+        args = pagination_arguments.parse_args(request)
+        page = args.get('page', 1)
+        per_page = args.get('per_page', 10)
+
+        widgets_query = Widget.query.filter(Widget.size == size)
 
         widgets_page = widgets_query.paginate(page, per_page, error_out=False)
 

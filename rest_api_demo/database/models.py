@@ -8,23 +8,20 @@ from rest_api_demo.database import db
 
 class Widget(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80))
-    size = db.Column(db.Integer)
-    finish = db.Column(db.String(80))
-    quantity = db.Column(db.Integer)
-    create_date = db.Column(db.DateTime)
+    name = db.Column(db.String(80), nullable=False)
+    size = db.Column(db.Integer, nullable=False)
+    finish = db.Column(db.String(80), nullable=False)
+    quantity = db.Column(db.Integer, nullable=False)
+    create_date = db.Column(db.DateTime, nullable=False, default=datetime.now())
 
     category_id = db.Column(db.Integer, db.ForeignKey('category.id'))
-    category = db.relationship('Category', backref=db.backref('widgets', lazy='dynamic'))
+    category = db.relationship('Category', backref=db.backref('widget', lazy='dynamic'))
 
-    def __init__(self, name, size, finish, quantity, category, create_date=None):
+    def __init__(self, name, size, finish, quantity, category):
         self.name = name
         self.size = size
         self.finish = finish
         self.quantity = quantity
-        if create_date is None:
-            create_date = datetime.utcnow()
-        self.create_date = create_date
         self.category = category
 
     def __repr__(self):
@@ -40,3 +37,25 @@ class Category(db.Model):
 
     def __repr__(self):
         return '<Category %r>' % self.name
+
+
+class Order(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    customer_name = db.Column(db.String(30), nullable=False)
+    order_date = db.Column(db.DateTime, nullable=False, default=datetime.now())
+    order_items = db.relationship("OrderItem", cascade="all, delete-orphan",
+                                  backref='order')
+
+    def __init__(self, customer_name):
+        self.customer_name = customer_name
+
+
+class OrderItem(db.Model):
+    order_id = db.Column(db.Integer, db.ForeignKey('order.id'), primary_key=True)
+    item_id = db.Column(db.Integer, db.ForeignKey('widget.id'), primary_key=True)
+
+
+    def __init__(self, item):
+        self.item = item
+
+    item = db.relationship(Widget, lazy='joined')
