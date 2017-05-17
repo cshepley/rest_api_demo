@@ -32,12 +32,15 @@ class WidgetsCollection(Resource):
 
         return widgets_page
 
+    @api.response(201, 'Widget successfully created.')
     @api.expect(widget_description)
-    def widget(self):
+    def post(self):
         """
         Creates a new widget widget.
         """
-        create_widget(request.json)
+
+        data = request.json
+        create_widget(data)
         return None, 201
 
 

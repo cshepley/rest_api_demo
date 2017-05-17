@@ -4,10 +4,12 @@ from rest_api_demo.database.models import Widget, Category
 
 def create_widget(data):
     name = data.get('name')
+    size = data.get('size')
+    finish = data.get('finish')
     quantity = data.get('quantity')
     category_id = data.get('category_id')
     category = Category.query.filter(Category.id == category_id).one()
-    widget = Widget(name, quantity, category)
+    widget = Widget(name, size, finish, quantity, category)
     db.session.add(widget)
     db.session.commit()
 

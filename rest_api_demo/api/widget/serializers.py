@@ -1,13 +1,15 @@
 from flask_restplus import fields
 from rest_api_demo.api.restplus import api
 
-widget_description = api.model('Widget', {
+widget_description = api.model('Widget description', {
     'id': fields.Integer(readOnly=True, description='The unique identifier of a widget'),
     'name': fields.String(required=True, description='Widget name'),
-    'quantity': fields.String(required=True, description='Widget quantity'),
-    'create_date': fields.DateTime,
+    'size': fields.Integer(required=True, description='Widget size'),
+    'finish': fields.String(required=True, description='Widget finish'),
+    'quantity': fields.Integer(required=True, description='Widget quantity'),
+    'create_date': fields.DateTime(readOnly=True),
     'category_id': fields.Integer(attribute='category.id'),
-    'category': fields.String(attribute='category.id'),
+    'category': fields.String(attribute='category.name'),
 })
 
 pagination = api.model('A page of results', {

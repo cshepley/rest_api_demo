@@ -34,7 +34,8 @@ def initialize_app(flask_app):
     flask_app.register_blueprint(blueprint)
 
     db.init_app(flask_app)
-
+    # Uncomment line below to create a new DB instead of loading existing.
+    # db.create_all(app=flask_app)
 
 def main():
     initialize_app(app)
