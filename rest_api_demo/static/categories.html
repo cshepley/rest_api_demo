@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Widgets Client Demo</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.min.css" rel="stylesheet">
+<script src="http://ajax.aspnetcdn.com/ajax/jquery/jquery-1.9.0.js"></script>
+<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/js/bootstrap.min.js"></script>
+<script src="http://ajax.aspnetcdn.com/ajax/knockout/knockout-2.2.1.js"></script>
+</head>
+<body>
+    <div class="navbar">
+        <div class="navbar-inner">
+            <a class="brand" href="index.html">Widgets-R-Us:</a>
+            <a class="brand" href="categories.html">Categories</a>
+            <a class="brand" href="widgets.html">Widgets</a>
+            <a class="brand" href="orders.html">Orders</a>
+        </div>
+    </div>
+    <div id="main" class="container">
+        <table class="table table-striped">
+            <tr><td style="width: 1px;"></td><td><b>Category</b></td><td><b>Options</b></td></tr>
+            <!-- ko foreach: categories -->
+            <tr>
+                <td><p><b data-bind="text: name"></b></p></td>
+                <td>
+                    <button data-bind="click: $parent.beginEdit" class="btn">Edit</button>
+                    <button data-bind="click: $parent.remove" class="btn">Delete</button>
+                </td>
+            </tr>
+            <!-- /ko -->
+        </table>
+        <button data-bind="click: beginAdd" class="btn">Add Category</button>
+    </div>
+    <div id="add" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="addDialogLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="addDialogLabel">Add Category</h3>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal">
+                <div class="control-group">
+                    <label class="control-label" for="inputCategory">Category</label>
+                    <div class="controls">
+                        <input data-bind="value: name" type="text" id="inputCategory" placeholder="Category name" style="width: 150px;">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button data-bind="click: addCategory" class="btn btn-primary">Add Category</button>
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+        </div>
+    </div>
+    <div id="edit" class="modal hide fade" tabindex="=1" role="dialog" aria-labelledby="editDialogLabel" aria-hidden="true">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h3 id="editDialogLabel">Add Category</h3>
+        </div>
+        <div class="modal-body">
+            <form class="form-horizontal">
+                <div class="control-group">
+                    <label class="control-label" for="inputCategory">Category</label>
+                    <div class="controls">
+                        <input data-bind="value: name" type="text" id="inputCategory" placeholder="Category title" style="width: 150px;">
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button data-bind="click:editCategory" class="btn btn-primary">Update Category</button>
+            <button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+        </div>
+    </div>
+    <script type="text/javascript">
+        // ViewModels used for knockout bindings.
+        function CategoriesViewModel() {
+            var self = this;
+            self.categoriesURI = 'http://localhost:8888/api/widget/categories/';
+            self.categories = ko.observableArray();
+
+            self.ajax = function(uri, method, data) {
+                var request = {
+                    url: uri,
+                    type: method,
+                    contentType: "application/json",
+                    crossDomain: true,
+                    accepts: "application/json",
+                    cache: false,
+                    dataType: 'json',
+                    data: JSON.stringify(data),
+                    error: function(jqXHR) {
+                        console.log("ajax error " + jqXHR.status);
+                    }
+                };
+                return $.ajax(request);
+            }
+
+            self.updateCategory = function(category, newCategory) {
+                var i = self.categories.indexOf(category);
+                self.categories()[i].id(newCategory.id);
+                self.categories()[i].name(newCategory.name);
+            }
+
+            self.beginAdd = function() {
+                $('#add').modal('show');
+            }
+
+            self.add = function(category) {
+                self.ajax(self.categoriesURI, 'POST', category).done(function(data) {
+                    self.categories.push({
+                        name: ko.observable(data.category.name),
+                    });
+                });
+            }
+
+            self.beginEdit = function(category) {
+                editCategoryViewModel.setCategory(category);
+                $('#edit').modal('show');
+            }
+
+            self.edit = function(category, data) {
+                self.ajax(category.id(), 'PUT', data).done(function(res) {
+                    self.updateCategory(category, res.category);
+                });
+            }
+
+            self.remove = function(category) {
+                self.ajax(category.id(), 'DELETE').done(function() {
+                    self.categories.remove(category);
+                });
+            }
+
+            self.getAll = function() {
+                self.ajax(self.categoriesURI, 'GET').done(function(data) {
+                    for (var i = 0; i < data.length; i++) {
+                        self.categories.push({
+                            id: ko.observable(data[i].id),
+                            name: ko.observable(data[i].name),
+                        });
+                    }
+                }).fail(function(jqXHR) {
+                    if (jqXHR.status == 403)
+                        setTimeout(self.beginLogin, 500);
+                });
+            }
+
+            self.getAll();
+        }
+
+        function AddCategoryViewModel() {
+            var self = this;
+            self.id = ko.observable();
+            self.name = ko.observable();
+
+            self.addCategory = function() {
+                $('#add').modal('hide');
+                categoriesViewModel.add({
+                    title: self.name()
+                });
+                self.name("");
+            }
+        }
+
+        function EditCategoryViewModel() {
+            var self = this;
+            self.id = ko.observable();
+            self.name = ko.observable();
+
+            self.setCategory = function(category) {
+                self.category = category;
+                self.name(category.name());
+                $('edit').modal('show');
+            }
+
+            self.editCategory = function() {
+                $('#edit').modal('hide');
+                categoriesViewModel.edit(self.category, {
+                    name: self.name(),
+                });
+            }
+        }
+
+        // Initialize view models.
+        var categoriesViewModel = new CategoriesViewModel();
+        var addCategoryViewModel = new AddCategoryViewModel();
+        var editCategoryViewModel = new EditCategoryViewModel();
+        ko.applyBindings(categoriesViewModel, $('#main')[0]);
+        ko.applyBindings(addCategoryViewModel, $('#add')[0]);
+        ko.applyBindings(editCategoryViewModel, $('#edit')[0]);
+    </script>
+</body>
+</html>

@@ -3,6 +3,7 @@
 import logging.config
 
 from flask import Flask, Blueprint
+from flask_cors import CORS, cross_origin
 from rest_api_demo import settings
 from rest_api_demo.api.widget.endpoints.widgets import ns as widget_items_namespace
 from rest_api_demo.api.widget.endpoints.categories import ns as widget_categories_namespace
@@ -11,6 +12,7 @@ from rest_api_demo.api.restplus import api
 from rest_api_demo.database import db
 
 app = Flask(__name__)
+cors = CORS(app, resources={r"/api/*": {"origins": "*"}})
 logging.config.fileConfig('logging.conf')
 log = logging.getLogger(__name__)
 
