@@ -6,6 +6,7 @@ from flask import Flask, Blueprint
 from rest_api_demo import settings
 from rest_api_demo.api.widget.endpoints.widgets import ns as widget_items_namespace
 from rest_api_demo.api.widget.endpoints.categories import ns as widget_categories_namespace
+from rest_api_demo.api.widget.endpoints.orders import ns as widget_orders_namespace
 from rest_api_demo.api.restplus import api
 from rest_api_demo.database import db
 
@@ -31,6 +32,7 @@ def initialize_app(flask_app):
     api.init_app(blueprint)
     api.add_namespace(widget_items_namespace)
     api.add_namespace(widget_categories_namespace)
+    api.add_namespace(widget_orders_namespace)
     flask_app.register_blueprint(blueprint)
 
     db.init_app(flask_app)

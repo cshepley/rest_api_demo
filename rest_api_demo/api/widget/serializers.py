@@ -13,7 +13,7 @@ widget_description = api.model('Widget description', {
 })
 
 order_item = api.model('Order item', {
-    'order_id': fields.Integer(required=True, description='The unique identifier of an order'),
+    'order_id': fields.Integer(description='The unique identifier of an order'),
     'item_id': fields.Integer(required=True, description='The unique identifier of a widget'),
 })
 
